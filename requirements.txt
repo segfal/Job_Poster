@@ -1,0 +1,16 @@
+aiohttp
+aiosignal
+async-timeout
+attrs
+charset-normalizer
+discord.py
+frozenlist
+idna
+multidict
+yarl
+requests
+asyncio
+bs4
+discord
+python-dotenv
+lxml

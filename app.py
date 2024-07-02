@@ -1,65 +1,173 @@
 
 
-from backend.LinkedIn import job_finder
-from discord.ext import commands
+from discord.ext import commands,tasks
 #discord env
 import discord
 import time
 import asyncio
-
 import os
-
 from dotenv import load_dotenv
 #import client
-
+import json
 load_dotenv()
 token = os.environ.get('TOKEN')
-
+import json
 client = discord.Client(intents=discord.Intents.default())
+bot = commands.Bot(command_prefix='!', intents=discord.Intents.default())
 
-job_finder.setjob("backend engineer")
-jobs = job_finder.get_jobs()
-#get rid of the spaces and newlines but not between words
+from jobspy import scrape_jobs
 
 
-#make the data readable
-for table in jobs:
-    for key in table:
-        #find first letter of the string
-        for i in range(0, len(table[key])):
-            if table[key][i] != " ":
-                table[key] = table[key][i:]
-                break
-        #find last letter of the string
-        for i in range(len(table[key]) - 1, 0, -1):
-            if table[key][i] != " ":
-                table[key] = table[key][:i + 1]
-                break
-        #print(table[key])
-        print(key + ": " + table[key])
-        
 
+
+
+
+
+def job_exists(job):
+    with open('jobs.json') as f:
+        data = json.load(f)
+        for i in data:
+            if job == i:
+                return True
+        return False
+def clear_json():
+    with open('jobs.json', 'w') as f:
+        json.dump([], f)
+    
+def add_job(job):
+    with open('jobs.json') as f:
+        data = json.load(f)
+        data.append(job)
+    with open('jobs.json', 'w') as f:
+        json.dump(data, f)
+
+def filter_jobs(jobs):
+    blacklist_companies = {
+        'Team Remotely Inc',
+        'HireMeFast LLC',
+        'Get It Recruit - Information Technology',
+    }
+
+    return [job for job in jobs if job['company'] not in blacklist_companies]
+
+def load_jobs(job_title):
+    
+    # if the job name contains a prohibited company skip it
+    blacklist_companies = [
+        'Team Remotely Inc',
+        'HireMeFast LLC',
+        'Get It Recruit - Information Technology',       
+    ]
+    
+    jobs = scrape_jobs(
+        site_name=["linkedin"],
+        search_term=job_title,
+        location="New York, NY",
+        results_wanted=20,
+        hours_old=24, # (only Linkedin/Indeed is hour specific, others round up to days old)
+        country_indeed='USA',  # only needed for indeed / glassdoor
+    )
     
 
+    job_arr = []
+    for i in range(len(jobs)):
+        job = {
+            'job_name': jobs['title'][i],
+            'company': jobs['company'][i],
+            'location': jobs['location'][i],
+            'link': jobs['job_url'][i],
+            "date_posted" : jobs['date_posted'][i]
+        }
+        if not job_exists(job):
+            add_job(job)
+            job_arr.append(job)
+    
+
+    return [job for job in job_arr if job['company'] not in blacklist_companies]
 
 
 
 
-@client.event
+
+
+
+
+@bot.event
 async def on_ready():
-    #print(f'{client.user} has connected to Discord!')
-    channel = client.get_channel(1071975520385904720)
+    print(f'Logged in as {bot.user}')
+    send_backend_jobs.start()
+    send_frontend_jobs.start()
+    send_fullstack_jobs.start()
+
+
+
+
+@tasks.loop(seconds=3600)
+async def send_backend_jobs():
+    channel = bot.get_channel(1257135450133500055)
+    channel2 = bot.get_channel(1257137243483672608)
     #build the message
     #message = "```"
-    
-    jerb = f'''Job Title: {jobs[0]['job_name']}\nCompany: {jobs[0]['company']}\nLocation: {jobs[0]['location']}\nLink: {jobs[0]['link']}\n'''
-    await channel.send(jerb)
+    jobs = load_jobs("backend engineer")
+    n = len(jobs)
+    for i in range(n):
+        jerb = f""" ``` ```
+>>> ## Job Title: {jobs[i]['job_name']}
+**Company:** {jobs[i]['company']}
+**Location:** {jobs[i]['location']}
+**Link:** [Click here]({jobs[i]['link']})
+""" 
+        await channel.send(jerb)
+        await channel2.send(jerb)
 
 
-    #send a message to the channel
+@tasks.loop(seconds=3800)
+async def send_frontend_jobs():
+    channel = bot.get_channel(1257135450133500055)
+    channel2 = bot.get_channel(1257137243483672608)
+    #build the message
+    #message = "```"
+    jobs = load_jobs("frontend engineer")
+    n = len(jobs)
+    for i in range(n):
+        jerb = f""" ``` ```
+>>> ## Job Title: {jobs[i]['job_name']}
+**Company:** {jobs[i]['company']}
+**Location:** {jobs[i]['location']}
+**Link:** [Click here]({jobs[i]['link']})
+""" 
+        await channel.send(jerb)
+        await channel2.send(jerb)
 
 
-  
 
 
-client.run(token)
+@tasks.loop(seconds=4100)
+async def send_fullstack_jobs():
+    channel = bot.get_channel(1257135450133500055)
+    channel2 = bot.get_channel(1257137243483672608)
+    #build the message
+    #message = "```"
+    jobs = load_jobs("fullstack engineer")
+    n = len(jobs)
+    for i in range(n):
+        jerb = f""" ``` ```
+>>> ## Job Title: {jobs[i]['job_name']}
+**Company:** {jobs[i]['company']}
+**Location:** {jobs[i]['location']}
+**Link:** [Click here]({jobs[i]['link']})
+""" 
+        await channel.send(jerb)
+        await channel2.send(jerb)
+
+
+
+#clear jobs after 24 hours
+@tasks.loop(seconds=86400)
+async def clear_jobs():
+    clear_json()
+
+
+
+
+bot.run(token)
