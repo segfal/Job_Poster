@@ -48,6 +48,7 @@ async def on_ready():
 async def send_backend_jobs():
     channel = bot.get_channel(1257135450133500055)
     channel2 = bot.get_channel(1257137243483672608)
+    channel3 = bot.get_channel(1127641023741440101)
     #build the message
     #message = "```"
     jobs = linkedin_jobs.load_jobs("backend engineer")
@@ -62,17 +63,19 @@ async def send_backend_jobs():
 """ 
         await channel.send(jerb)
         await channel2.send(jerb)
+        await channel3.send(jerb)
 
 
 @tasks.loop(seconds=3800)
 async def send_frontend_jobs():
     channel = bot.get_channel(1257135450133500055)
     channel2 = bot.get_channel(1257137243483672608)
+    channel3 = bot.get_channel(1127641023741440101)
     #build the message
     #message = "```"
     jobs = linkedin_jobs.load_jobs("frontend engineer")
     n = len(jobs)
-    
+
     for i in range(n):
         jerb = f""" ``` ```
 >>> ## Job Title: {jobs[i]['title']}
@@ -82,6 +85,7 @@ async def send_frontend_jobs():
 """ 
         await channel.send(jerb)
         await channel2.send(jerb)
+        await channel3.send(jerb)
 
 
 
@@ -90,6 +94,7 @@ async def send_frontend_jobs():
 async def send_fullstack_jobs():
     channel = bot.get_channel(1257135450133500055)
     channel2 = bot.get_channel(1257137243483672608)
+    channel3 = bot.get_channel(1127641023741440101)
     #build the message
     #message = "```"
     jobs = linkedin_jobs.load_jobs("fullstack engineer")
@@ -104,6 +109,7 @@ async def send_fullstack_jobs():
 """ 
         await channel.send(jerb)
         await channel2.send(jerb)
+        await channel3.send(jerb)
 
 
 
@@ -116,6 +122,7 @@ async def send_all_jobs():
     """
     channel = bot.get_channel(1257135450133500055)
     channel2 = bot.get_channel(1257137243483672608)
+    channel3 = bot.get_channel(1127641023741440101)
     #build the message
     #message = "```"
     jobs = linkedin_jobs.load_jobs("backend engineer")
@@ -130,6 +137,7 @@ async def send_all_jobs():
 """ 
         await channel.send(jerb)
         await channel2.send(jerb)
+        await channel3.send(jerb)
     time.sleep(4)
     jobs = linkedin_jobs.load_jobs("frontend engineer")
     n = len(jobs)
@@ -143,6 +151,7 @@ async def send_all_jobs():
 """ 
         await channel.send(jerb)
         await channel2.send(jerb)
+        await channel3.send(jerb)
     time.sleep(4)
     jobs = linkedin_jobs.load_jobs("fullstack engineer")
     n = len(jobs)
@@ -156,6 +165,7 @@ async def send_all_jobs():
 """ 
         await channel.send(jerb)
         await channel2.send(jerb)
+        await channel3.send(jerb)
 
 
 #clear jobs after 24 hours
