@@ -1,8 +1,8 @@
 main.ipynb
-
+.env
 index.html
 new.html
 backend/__pycache__/__init__.cpython-310.pyc
 backend/__pycache__/LinkedIn.cpython-310.pyc
 backend/__pycache__/JobFinder.cpython-310.pyc
-.env
+*.db
