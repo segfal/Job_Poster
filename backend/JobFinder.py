@@ -13,7 +13,6 @@ class JobFinder:
             'Get It Recruit - Information Technology',
             "Offered.ai",
             "4 Staffing Corp"
-
         }
         self.bad_roles = {
             "unpaid",
@@ -32,7 +31,7 @@ class JobFinder:
             "Principal",
             "VP",
             "sr.",
-             "Snr",
+            "Snr",
 
         }
 
