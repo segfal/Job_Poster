@@ -39,3 +39,15 @@ def test_clear_jobs():
     assert linkedin.job_exists(job) == False
 
 
+import json
+
+
+with open('prod.json','r') as f:
+    data = json.load(f)
+    print(data)
+
+
+
+for i in data:
+    print(i)
+    
