@@ -6,8 +6,8 @@ def is_prod():
     return IS_PROD
 
 
-def get_data():
-    if IS_PROD:
+def get_channels():
+    if is_prod():
         with open('prod.json', 'r') as f:
             data = json.load(f)
             return data
@@ -16,6 +16,7 @@ def get_data():
             data = json.load(f)
             return data
     
+
 
 
 

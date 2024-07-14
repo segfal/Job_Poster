@@ -7,16 +7,19 @@ import asyncio
 import os
 from dotenv import load_dotenv
 import json
+from RankingSystem.dbase import create_table, insert_data,update_data
 
 load_dotenv()
 token = os.environ.get("TOKEN")
 import json
 import time
+from is_prod import get_channels
+from backend.Linkedin import linkedin_jobs
 
 client = discord.Client(intents=discord.Intents.default())
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.default())
-
-from backend.Linkedin import linkedin_jobs
+channels = [bot.get_channel(i) for i in get_channels()]
+print(channels)
 
 
 def get_jobs(job_title):
@@ -42,72 +45,7 @@ async def on_ready():
     send_all_jobs.start()
     clear_jobs.start()
 
-
-@tasks.loop(seconds=3600)
-async def send_backend_jobs():
-    channel = bot.get_channel(1257135450133500055)
-    # channel2 = bot.get_channel(1257137243483672608)
-    # channel3 = bot.get_channel(1127641023741440101)
-    # build the message
-    # message = "```"
-    jobs = linkedin_jobs.load_jobs("backend engineer")
-    n = len(jobs)
-
-    for i in range(n):
-        embed = discord.Embed(
-            title=f"{jobs[i]['title']}",
-            description=f"**Company:** {jobs[i]['company']}\n**Location:** {jobs[i]['location']}\n**[Click here]({jobs[i]['job_url']})**",
-            color=discord.Color.blue(),
-        )
-
-        await channel.send(embed=embed)
-        # await channel2.send(jerb)
-        # await channel3.send(jerb)
-
-
-@tasks.loop(seconds=3800)
-async def send_frontend_jobs():
-    channel = bot.get_channel(1257135450133500055)
-    # channel2 = bot.get_channel(1257137243483672608)
-    # channel3 = bot.get_channel(1127641023741440101)
-    # build the message
-    # message = "```"
-    jobs = linkedin_jobs.load_jobs("frontend engineer")
-    n = len(jobs)
-
-    for i in range(n):
-        embed = discord.Embed(
-            title=f"{jobs[i]['title']}",
-            description=f"**Company:** {jobs[i]['company']}\n**Location:** {jobs[i]['location']}\n**[Click here]({jobs[i]['job_url']})**",
-            color=discord.Color.blue(),
-        )
-
-        await channel.send(embed=embed)
-        # await channel2.send(jerb)
-        # await channel3.send(jerb)
-
-
-@tasks.loop(seconds=4100)
-async def send_fullstack_jobs():
-    channel = bot.get_channel(1257135450133500055)
-    # channel2 = bot.get_channel(1257137243483672608)
-    # channel3 = bot.get_channel(1127641023741440101)
-    # build the message
-    # message = "```"
-    jobs = linkedin_jobs.load_jobs("fullstack engineer")
-    n = len(jobs)
-
-    for i in range(n):
-        embed = discord.Embed(
-            title=f"{jobs[i]['title']}",
-            description=f"**Company:** {jobs[i]['company']}\n**Location:** {jobs[i]['location']}\n**[Click here]({jobs[i]['job_url']})**",
-            color=discord.Color.blue(),
-        )
-
-        await channel.send(embed=embed)
-        # await channel2.send(jerb)
-        # await channel3.send(jerb)
-
+   
 
 @tasks.loop(seconds=3600)
 async def send_all_jobs():
@@ -116,11 +54,8 @@ async def send_all_jobs():
     for each role wait 10 seconds before sending the next role
 
     """
-    channel = bot.get_channel(1257135450133500055)
-    # channel2 = bot.get_channel(1257137243483672608)
-    # channel3 = bot.get_channel(1127641023741440101)
-    # build the message
-    # message = "```"
+    channels = [bot.get_channel(i) for i in get_channels()]
+    
     jobs = linkedin_jobs.load_jobs("backend engineer")
     n = len(jobs)
 
@@ -131,9 +66,9 @@ async def send_all_jobs():
             color=discord.Color.blue(),
         )
 
-        await channel.send(embed=embed)
-        # await channel2.send(jerb)
-        # await channel3.send(jerb)
+        for channel in channels:
+            await channel.send(embed=embed)
+        
     time.sleep(4)
     jobs = linkedin_jobs.load_jobs("frontend engineer")
     n = len(jobs)
@@ -145,9 +80,8 @@ async def send_all_jobs():
             color=discord.Color.blue(),
         )
 
-        await channel.send(embed=embed)
-        # await channel2.send(jerb)
-        # await channel3.send(jerb)
+        for channel in channels:
+            await channel.send(embed=embed)
     time.sleep(4)
     jobs = linkedin_jobs.load_jobs("fullstack engineer")
     n = len(jobs)
@@ -158,9 +92,10 @@ async def send_all_jobs():
             description=f"**Company:** {jobs[i]['company']}\n**Location:** {jobs[i]['location']}\n**[Click here]({jobs[i]['job_url']})**",
             color=discord.Color.blue(),
         )
-        await channel.send(embed=embed)
-        # await channel2.send(jerb)
-        # await channel3.send(jerb)
+        for channel in channels:
+            await channel.send(embed=embed)
+    time.sleep(4)
+
 
 
 # clear jobs after 24 hours
