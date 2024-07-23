@@ -15,3 +15,5 @@ discord
 python-dotenv
 lxml
 python-jobspy
+psycopg2-binary
+psycopg2

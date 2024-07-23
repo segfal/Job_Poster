@@ -64,7 +64,6 @@ def get_user_data(server_name, username):
     data = cur.fetchall()
     return data
 
-
 def update_data(server_name, username, company_name, company_position, did_apply, did_interview, offer):
     cur = conn.cursor()
     cur.execute(f'''UPDATE server_name{str(server_name)}

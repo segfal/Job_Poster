@@ -1,10 +1,14 @@
 main.ipynb
-.env
+
 index.html
 new.html
 backend/__pycache__/__init__.cpython-310.pyc
 backend/__pycache__/LinkedIn.cpython-310.pyc
 backend/__pycache__/JobFinder.cpython-310.pyc
+
+
+# remove when uploading to production DO NOT REMOVE WHEN PUSHING TO GITHUB  
 *.db
 prod.json
 dev.json
+.env

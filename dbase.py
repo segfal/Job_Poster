@@ -63,6 +63,16 @@ def add_job(job):
     conn.commit()
     conn.close()
 
+def add_jobs(jobs):
+    conn = sqlite3.connect('jobs.db')
+    c = conn.cursor()
+    c.executemany('''
+        INSERT INTO jobs (job_url, title, company, location, date_posted)
+        VALUES (?, ?, ?, ?, ?)
+    ''', [(job['job_url'], job['title'], job['company'], job['location'], job['date_posted']) for job in jobs])
+    conn.commit()
+    conn.close()
+
 
 
 
